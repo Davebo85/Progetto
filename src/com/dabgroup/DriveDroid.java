@@ -31,7 +31,8 @@ import android.widget.Toast;
 
 public class DriveDroid extends Activity {
 	public LinearLayout menu;
-	public RelativeLayout view1;
+	public RelativeLayout lview1;
+	public RelativeLayout lview2;
 	// Debugging
 	private static final String TAG = "BluetoothChat";
 	private static final boolean D = true;
@@ -82,13 +83,12 @@ public class DriveDroid extends Activity {
 		
 		setContentView(R.layout.frame);
 		menu = (LinearLayout) findViewById(R.id.menu);
-		view1 = (RelativeLayout) findViewById(R.id.view1);
-		MyView view = new MyView(this);
-		//view.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		view1.addView(view);
+		lview1 = (RelativeLayout) findViewById(R.id.view1);
+		lview2 = (RelativeLayout) findViewById(R.id.view2);
 		
 		menu.setVisibility(FrameLayout.VISIBLE);
-		view1.setVisibility(FrameLayout.GONE);
+		lview1.setVisibility(FrameLayout.GONE);
+		lview2.setVisibility(FrameLayout.GONE);
 		
 
 		// Set up the custom title
@@ -132,8 +132,14 @@ public class DriveDroid extends Activity {
 			case R.id.start:
 //				Intent intent = new Intent(DriveDroid.this, DragImageActivity.class);
 //				startActivity(intent);
+				MyView1 view1 = new MyView1(getBaseContext());
+				//view.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+				lview1.addView(view1);
+//				lview2.addView(view2);
+				
 				menu.setVisibility(FrameLayout.GONE);
-				view1.setVisibility(FrameLayout.VISIBLE);
+				lview1.setVisibility(FrameLayout.VISIBLE);
+				lview2.setVisibility(FrameLayout.GONE);
 				break;
 			case R.id.discoverable:
 				ensureDiscoverable();
@@ -392,13 +398,25 @@ public class DriveDroid extends Activity {
 		switch (item.getItemId()) {
 		case R.id.home:
 			menu.setVisibility(FrameLayout.VISIBLE);
-			view1.setVisibility(FrameLayout.GONE);
+			lview1.removeAllViewsInLayout();
+			lview2.removeAllViewsInLayout();
 			return true;
 		case R.id.view1:
+			lview2.removeAllViewsInLayout();
 			menu.setVisibility(FrameLayout.GONE);
-			view1.setVisibility(FrameLayout.VISIBLE);
+			MyView1 view1 = new MyView1(getBaseContext());
+			lview1.addView(view1);
+			lview2.removeAllViewsInLayout();
+			lview1.setVisibility(FrameLayout.VISIBLE);
+			lview2.setVisibility(FrameLayout.GONE);
 			return true;
 		case R.id.view2:
+			lview1.removeAllViewsInLayout();
+			menu.setVisibility(FrameLayout.GONE);
+			lview1.setVisibility(FrameLayout.GONE);
+			MyView2 view2 = new MyView2(getBaseContext());
+			lview2.addView(view2);
+			lview2.setVisibility(FrameLayout.VISIBLE);
 			return true;
 		case R.id.view3:
 			return true;

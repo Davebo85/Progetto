@@ -12,5 +12,4 @@
     <item android:id="@+id/view3"
           android:title="Shell"
           android:icon="@android:drawable/btn_star" />
-
 </menu>
