@@ -33,6 +33,7 @@ public class DriveDroid extends Activity {
 	public LinearLayout menu;
 	public RelativeLayout lview1;
 	public RelativeLayout lview2;
+	private Activity activity;
 	// Debugging
 	private static final String TAG = "BluetoothChat";
 	private static final boolean D = true;
@@ -72,13 +73,14 @@ public class DriveDroid extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		activity = this;
 		if (D)
 			Log.e(TAG, "+++ ON CREATE +++");
 		// Set up the window layout
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		getWindow().setBackgroundDrawableResource(R.drawable.pro_sfondo);
 		
 		setContentView(R.layout.frame);
@@ -90,7 +92,6 @@ public class DriveDroid extends Activity {
 		lview1.setVisibility(FrameLayout.GONE);
 		lview2.setVisibility(FrameLayout.GONE);
 		
-
 		// Set up the custom title
 		mTitle = (TextView) findViewById(R.id.title_left_text);
 		mTitle.setText(R.string.app_name);
@@ -130,13 +131,9 @@ public class DriveDroid extends Activity {
 				startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
 				break;
 			case R.id.start:
-//				Intent intent = new Intent(DriveDroid.this, DragImageActivity.class);
-//				startActivity(intent);
-				MyView1 view1 = new MyView1(getBaseContext());
-				//view.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+				MyView1 view1 = new MyView1(getBaseContext(), activity);
 				lview1.addView(view1);
-//				lview2.addView(view2);
-				
+				lview2.removeAllViewsInLayout();
 				menu.setVisibility(FrameLayout.GONE);
 				lview1.setVisibility(FrameLayout.VISIBLE);
 				lview2.setVisibility(FrameLayout.GONE);
@@ -404,7 +401,7 @@ public class DriveDroid extends Activity {
 		case R.id.view1:
 			lview2.removeAllViewsInLayout();
 			menu.setVisibility(FrameLayout.GONE);
-			MyView1 view1 = new MyView1(getBaseContext());
+			MyView1 view1 = new MyView1(getBaseContext(), activity);
 			lview1.addView(view1);
 			lview2.removeAllViewsInLayout();
 			lview1.setVisibility(FrameLayout.VISIBLE);
@@ -424,4 +421,6 @@ public class DriveDroid extends Activity {
 		}
 		return false;
 	}
+	
+	
 }

@@ -71,7 +71,7 @@ public class Immagine extends BitmapFactory {
 				bmp1.getHeight(), bmp1.getConfig());
 		Canvas canvas = new Canvas(bmOverlay);
 		canvas.drawBitmap(bmp1, new Matrix(), null);
-		canvas.translate(40, 6);
+		canvas.translate(6, 40);
 		canvas.drawBitmap(bmp2, new Matrix(), null);
 		return bmOverlay;
 	}

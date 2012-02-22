@@ -21,19 +21,13 @@ import android.view.WindowManager;
 public class MyView2 extends View implements SensorEventListener {
 
 	private String TAG = "PIPPO";
-	private int DEFAULT_W = 480;
-	private int DEFAULT_H = 800;
-	private int SCALE_X = 100;
-	private int SCALE_Y = 100;
-	private int width;
-	private int height;
-	private int[] x = { 180, 380, 50 };
-	private int[] y = { 650, 0, 335 };
+	private int[] x = { 650, 50, 335 };
+	private int[] y = { 190, 0, 430 };
 	private int NUMBER_IMAGES = 3;
 	private Immagine[] img = new Immagine[3];
 	private int cambio_value = 4;
-	private int INITROTATION = 181;
 	private int valueOfRotation = 0;
+	
 	private Paint[] myPaint = new Paint[3];
 
 	private Bitmap cruscotto;
@@ -46,17 +40,12 @@ public class MyView2 extends View implements SensorEventListener {
 
 	public MyView2(Context context) {
 		super(context);
-		WindowManager wm = (WindowManager) context
-				.getSystemService(Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay();
-		width = display.getWidth();
-		height = display.getHeight();
 		// Inizializzo sensore
 		manager = (SensorManager) context
 				.getSystemService(Context.SENSOR_SERVICE);
 		List<Sensor> list = manager.getSensorList(Sensor.TYPE_ORIENTATION);
 		s = list.get(0);
-		manager.registerListener(sens, s, SensorManager.SENSOR_DELAY_NORMAL);
+		manager.registerListener(sens, s, SensorManager.SENSOR_DELAY_FASTEST);
 
 		BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inJustDecodeBounds = true;
@@ -65,20 +54,20 @@ public class MyView2 extends View implements SensorEventListener {
 				R.drawable.pro_cruscotto2);
 		luci = BitmapFactory.decodeResource(getResources(),
 				R.drawable.pro_ledoff);
-		img[0] = new Immagine(getContext(), R.drawable.pro_cambio, x[0], y[0],
-				120, 150, false, -1, 0, true);
-		img[1] = new Immagine(getContext(), R.drawable.ic_launcher, x[1], y[1],
-				100, 100, false, -1, 0, false);
-		img[2] = new Immagine(getContext(), R.drawable.pro_volante, x[2], y[2],
-				0, 0, false, -1, 0, false);
+		img[0] = new Immagine(context, R.drawable.pro_cambio, x[0], y[0], 150,
+				120, false, -1, 0, true);
+		img[1] = new Immagine(context, R.drawable.ic_launcher, x[1], y[1], 100,
+				100, false, -1, 0, false);
+		img[2] = new Immagine(context, R.drawable.pro_volante, x[2], y[2], 0,
+				0, false, -1, 0, false);
 		square_color();
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		canvas.drawRect(0, 700, 480, 800, myPaint[0]);
-		canvas.drawRect(380, 0, 480, 200, myPaint[1]);
-		canvas.drawRect(0, 0, 100, 600, myPaint[2]);
+		canvas.drawRect(700, 0, 800, 480, myPaint[0]);
+		canvas.drawRect(0, 0, 200, 100, myPaint[1]);
+		canvas.drawRect(0, 380, 700, 480, myPaint[2]);
 
 		canvas.drawBitmap(cruscotto, 0, 0, null);
 		// canvas.drawBitmap(immagine, 100,100, null);
@@ -92,12 +81,12 @@ public class MyView2 extends View implements SensorEventListener {
 				canvas.drawBitmap(imm, img[i].x, img[i].y, null);
 			} else {
 				img[i].rot = valueOfRotation;
-				canvas.rotate(img[i].rot, x[i], y[i]);
+				canvas.rotate(img[i].rot, x[i], y[i]+10);
 				canvas.drawBitmap(imm, img[i].x - imm.getWidth() / 2, img[i].y
 						- imm.getHeight() / 2, null);
 			}
 		}
-		// canvas.drawRect(0, 700, 480, 800, myPaint[0]);
+
 	}
 
 	public boolean isOverImage(int index, int x_p, int y_p) {
@@ -159,31 +148,30 @@ public class MyView2 extends View implements SensorEventListener {
 						// + " poi = " + img[j].poi);
 						switch (j) {
 						case 0:
-							img[0].x = x_p - img[0].getImage(-1).getWidth() / 2;
-							// Log.d("TTTTTTTTTTTT","    x = " + img[0].x);
-							if (x_p > 212 && x_p < 268) {
+							img[0].y = y_p - img[0].getImage(-1).getWidth() / 2;
+							Log.d("TTTTTTTTTTTT", "    x = " + img[0].x);
+							if (y_p > 212 && y_p < 268) {
 								cambio_value = 4;
-							} else if (x_p <= 212 && x_p > 156) {
-								cambio_value = 3;
-							} else if (x_p <= 156 && x_p > 100) {
-								cambio_value = 2;
-							} else if (x_p <= 100 && x_p > 44) {
-								cambio_value = 1;
-							} else if (x_p <= 44) {
-								cambio_value = 0;
-							} else if (x_p >= 268 && x_p < 324) {
+							} else if (y_p <= 212 && y_p > 156) {
 								cambio_value = 5;
-							} else if (x_p >= 324 && x_p < 380) {
+							} else if (y_p <= 156 && y_p > 100) {
 								cambio_value = 6;
-							} else if (x_p >= 380 && x_p < 436) {
+							} else if (y_p <= 100 && y_p > 44) {
 								cambio_value = 7;
-							} else if (x_p >= 436) {
+							} else if (y_p <= 44) {
 								cambio_value = 8;
+							} else if (y_p >= 268 && y_p < 324) {
+								cambio_value = 3;
+							} else if (y_p >= 324 && y_p < 380) {
+								cambio_value = 2;
+							} else if (y_p >= 380 && y_p < 436) {
+								cambio_value = 1;
+							} else if (y_p >= 436) {
+								cambio_value = 0;
 							}
 							break;
 						case 1:
-							img[j].y = y_p - img[j].getImage(-1).getHeight()
-									/ 2;
+							img[j].x = x_p - img[j].getImage(-1).getHeight() / 2;
 							break;
 						case 2:
 							/*
