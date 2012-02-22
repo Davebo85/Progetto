@@ -6,8 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 
-import com.dabgroup.R;
-
 public class Immagine extends BitmapFactory {
 	public int image;
 	public int x, y;

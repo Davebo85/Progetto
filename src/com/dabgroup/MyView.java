@@ -10,8 +10,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.dabgroup.R;
-
 public class MyView extends View {
 	private String TAG = "PIPPO";
 	private int DEFAULT_W = 480;

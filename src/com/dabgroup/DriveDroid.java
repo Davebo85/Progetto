@@ -10,6 +10,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -25,8 +28,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.dabgroup.R;
 
 public class DriveDroid extends Activity {
 	public LinearLayout menu;
@@ -379,7 +380,7 @@ public class DriveDroid extends Activity {
 		}
 	}
 
-	/*@Override
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.option_menu, menu);
@@ -399,10 +400,10 @@ public class DriveDroid extends Activity {
 			return true;
 		case R.id.view2:
 			return true;
-		case R.id.app:
+		case R.id.view3:
 			return true;
 
 		}
 		return false;
-	}*/
+	}
 }
