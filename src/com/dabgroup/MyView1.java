@@ -1,7 +1,5 @@
 package com.dabgroup;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -12,9 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class MyView1 extends View {
-	private String messaggio;
-	private Context superContext;
-	private Activity superActivity;
+	private DriveDroid superActivity;
 	private String TAG = "PIPPO";
 	private int[] x = { 650, 50, 335 };
 	private int[] y = { 190, 0, 430 };
@@ -27,10 +23,10 @@ public class MyView1 extends View {
 	private Bitmap luci;
 	private boolean led = false;
 
-	public MyView1(Context context, Activity act) {
-		super(context);
-		superContext = context;
-		superActivity = act;
+	public MyView1(DriveDroid activity) {
+		super(activity);
+		//superContext = context;
+		superActivity = activity;
 		
 		BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inJustDecodeBounds = true;
@@ -39,11 +35,11 @@ public class MyView1 extends View {
 				R.drawable.pro_cruscotto2);
 		luci = BitmapFactory.decodeResource(getResources(),
 				R.drawable.pro_ledoff);
-		img[0] = new Immagine(context, R.drawable.pro_cambio, x[0], y[0], 150,
+		img[0] = new Immagine(superActivity, R.drawable.pro_cambio, x[0], y[0], 150,
 				120, false, -1, 0, true);
-		img[1] = new Immagine(context, R.drawable.ic_launcher, x[1], y[1], 100,
+		img[1] = new Immagine(superActivity, R.drawable.ic_launcher, x[1], y[1], 100,
 				100, false, -1, 0, false);
-		img[2] = new Immagine(context, R.drawable.pro_volante, x[2], y[2], 0,
+		img[2] = new Immagine(superActivity, R.drawable.pro_volante, x[2], y[2], 0,
 				0, false, -1, 0, false);
 		square_color();
 	}
@@ -170,6 +166,8 @@ public class MyView1 extends View {
 						default:
 							break;
 						}
+						
+						superActivity.sendMessage("");
 					}
 				}
 					invalidate();

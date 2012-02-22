@@ -29,7 +29,48 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DriveDroid extends Activity {
+public class DriveDroid extends Activity 
+{
+	public class AzioneShowMenu implements OnClickListener
+	{
+		DriveDroid activity;
+		
+		public AzioneShowMenu(DriveDroid activity) 
+		{
+			this.activity = activity;
+		}
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			switch (v.getId()) {
+			case R.id.scan:
+				// Launch the DeviceListActivity to see devices and do scan
+				Intent serverIntent = new Intent(DriveDroid.this,
+				DeviceListActivity.class);
+				startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+				break;
+			case R.id.start:
+				MyView1 view1 = new MyView1(activity);
+				lview1.addView(view1);
+				lview2.removeAllViewsInLayout();
+				menu.setVisibility(FrameLayout.GONE);
+				lview1.setVisibility(FrameLayout.VISIBLE);
+				lview2.setVisibility(FrameLayout.GONE);
+				break;
+			case R.id.discoverable:
+				ensureDiscoverable();
+				break;
+			case R.id.exit:
+				finish();
+				break;
+			default:
+				break;
+			}
+		}
+		
+	}
+	
 	public LinearLayout menu;
 	public RelativeLayout lview1;
 	public RelativeLayout lview2;
@@ -112,43 +153,12 @@ public class DriveDroid extends Activity {
 		Button start = (Button) findViewById(R.id.start);
 		Button discoverable = (Button) findViewById(R.id.discoverable);
 		ImageButton exit = (ImageButton) findViewById(R.id.exit);
-		scan.setOnClickListener(menu_iniziale);
-		start.setOnClickListener(menu_iniziale);
-		discoverable.setOnClickListener(menu_iniziale);
-		exit.setOnClickListener(menu_iniziale);
+		scan.setOnClickListener(new AzioneShowMenu(this));
+		start.setOnClickListener(new AzioneShowMenu(this));
+		discoverable.setOnClickListener(new AzioneShowMenu(this));
+		exit.setOnClickListener(new AzioneShowMenu(this));
 	}
 
-	OnClickListener menu_iniziale = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			// TODO Auto-generated method stub
-			switch (v.getId()) {
-			case R.id.scan:
-				// Launch the DeviceListActivity to see devices and do scan
-				Intent serverIntent = new Intent(DriveDroid.this,
-				DeviceListActivity.class);
-				startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
-				break;
-			case R.id.start:
-				MyView1 view1 = new MyView1(getBaseContext(), activity);
-				lview1.addView(view1);
-				lview2.removeAllViewsInLayout();
-				menu.setVisibility(FrameLayout.GONE);
-				lview1.setVisibility(FrameLayout.VISIBLE);
-				lview2.setVisibility(FrameLayout.GONE);
-				break;
-			case R.id.discoverable:
-				ensureDiscoverable();
-				break;
-			case R.id.exit:
-				finish();
-				break;
-			default:
-				break;
-			}
-		}
-	};
 
 	@Override
 	public void onStart() {
@@ -263,10 +273,11 @@ public class DriveDroid extends Activity {
 	 *            A string of text to send.
 	 */
 	protected void sendMessage(String message) {
+		Log.d("ENTRATO","ECCOLO " + message);
 		// Check that we're actually connected before trying anything
 		if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
-			Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
-					.show();
+			/*Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
+					.show();*/
 			return;
 		}
 
@@ -401,7 +412,7 @@ public class DriveDroid extends Activity {
 		case R.id.view1:
 			lview2.removeAllViewsInLayout();
 			menu.setVisibility(FrameLayout.GONE);
-			MyView1 view1 = new MyView1(getBaseContext(), activity);
+			MyView1 view1 = new MyView1(this);
 			lview1.addView(view1);
 			lview2.removeAllViewsInLayout();
 			lview1.setVisibility(FrameLayout.VISIBLE);
@@ -411,7 +422,7 @@ public class DriveDroid extends Activity {
 			lview1.removeAllViewsInLayout();
 			menu.setVisibility(FrameLayout.GONE);
 			lview1.setVisibility(FrameLayout.GONE);
-			MyView2 view2 = new MyView2(getBaseContext());
+			MyView2 view2 = new MyView2(this);
 			lview2.addView(view2);
 			lview2.setVisibility(FrameLayout.VISIBLE);
 			return true;

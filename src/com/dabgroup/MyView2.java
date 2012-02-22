@@ -13,13 +13,12 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 
 public class MyView2 extends View implements SensorEventListener {
 
+	private DriveDroid superActivity;
 	private String TAG = "PIPPO";
 	private int[] x = { 650, 50, 335 };
 	private int[] y = { 190, 0, 430 };
@@ -27,7 +26,7 @@ public class MyView2 extends View implements SensorEventListener {
 	private Immagine[] img = new Immagine[3];
 	private int cambio_value = 4;
 	private int valueOfRotation = 0;
-	
+
 	private Paint[] myPaint = new Paint[3];
 
 	private Bitmap cruscotto;
@@ -38,10 +37,11 @@ public class MyView2 extends View implements SensorEventListener {
 	public Sensor s;
 	public SensorEventListener sens = this;
 
-	public MyView2(Context context) {
-		super(context);
+	public MyView2(DriveDroid activity) {
+		super(activity);
+		superActivity = activity;
 		// Inizializzo sensore
-		manager = (SensorManager) context
+		manager = (SensorManager) activity
 				.getSystemService(Context.SENSOR_SERVICE);
 		List<Sensor> list = manager.getSensorList(Sensor.TYPE_ORIENTATION);
 		s = list.get(0);
@@ -54,11 +54,11 @@ public class MyView2 extends View implements SensorEventListener {
 				R.drawable.pro_cruscotto2);
 		luci = BitmapFactory.decodeResource(getResources(),
 				R.drawable.pro_ledoff);
-		img[0] = new Immagine(context, R.drawable.pro_cambio, x[0], y[0], 150,
+		img[0] = new Immagine(superActivity, R.drawable.pro_cambio, x[0], y[0], 150,
 				120, false, -1, 0, true);
-		img[1] = new Immagine(context, R.drawable.ic_launcher, x[1], y[1], 100,
+		img[1] = new Immagine(superActivity, R.drawable.ic_launcher, x[1], y[1], 100,
 				100, false, -1, 0, false);
-		img[2] = new Immagine(context, R.drawable.pro_volante, x[2], y[2], 0,
+		img[2] = new Immagine(superActivity, R.drawable.pro_volante, x[2], y[2], 0,
 				0, false, -1, 0, false);
 		square_color();
 	}
@@ -81,12 +81,11 @@ public class MyView2 extends View implements SensorEventListener {
 				canvas.drawBitmap(imm, img[i].x, img[i].y, null);
 			} else {
 				img[i].rot = valueOfRotation;
-				canvas.rotate(img[i].rot, x[i], y[i]+10);
+				canvas.rotate(img[i].rot, x[i], y[i] + 10);
 				canvas.drawBitmap(imm, img[i].x - imm.getWidth() / 2, img[i].y
 						- imm.getHeight() / 2, null);
 			}
 		}
-
 	}
 
 	public boolean isOverImage(int index, int x_p, int y_p) {
@@ -171,7 +170,8 @@ public class MyView2 extends View implements SensorEventListener {
 							}
 							break;
 						case 1:
-							img[j].x = x_p - img[j].getImage(-1).getHeight() / 2;
+							img[j].x = x_p - img[j].getImage(-1).getHeight()
+									/ 2;
 							break;
 						case 2:
 							/*
@@ -184,6 +184,7 @@ public class MyView2 extends View implements SensorEventListener {
 						default:
 							break;
 						}
+						superActivity.sendMessage("");
 					}
 				}
 					invalidate();
