@@ -29,17 +29,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DriveDroid extends Activity 
-{
-	public class AzioneShowMenu implements OnClickListener
-	{
+public class DriveDroid extends Activity {
+	public class AzioneShowMenu implements OnClickListener {
 		DriveDroid activity;
-		
-		public AzioneShowMenu(DriveDroid activity) 
-		{
+
+		public AzioneShowMenu(DriveDroid activity) {
 			this.activity = activity;
 		}
-		
+
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
@@ -47,14 +44,17 @@ public class DriveDroid extends Activity
 			case R.id.scan:
 				// Launch the DeviceListActivity to see devices and do scan
 				Intent serverIntent = new Intent(DriveDroid.this,
-				DeviceListActivity.class);
+						DeviceListActivity.class);
 				startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
 				break;
 			case R.id.start:
 				MyView1 view1 = new MyView1(activity);
+				Numbers distance = new Numbers(activity);
+				ldistance.addView(distance);
 				lview1.addView(view1);
 				lview2.removeAllViewsInLayout();
 				menu.setVisibility(FrameLayout.GONE);
+				ldistance.setVisibility(FrameLayout.VISIBLE);
 				lview1.setVisibility(FrameLayout.VISIBLE);
 				lview2.setVisibility(FrameLayout.GONE);
 				break;
@@ -68,10 +68,11 @@ public class DriveDroid extends Activity
 				break;
 			}
 		}
-		
+
 	}
-	
+
 	public LinearLayout menu;
+	public RelativeLayout ldistance;
 	public RelativeLayout lview1;
 	public RelativeLayout lview2;
 	private Activity activity;
@@ -123,16 +124,18 @@ public class DriveDroid extends Activity
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		getWindow().setBackgroundDrawableResource(R.drawable.pro_sfondo);
-		
+
 		setContentView(R.layout.frame);
 		menu = (LinearLayout) findViewById(R.id.menu);
+		ldistance = (RelativeLayout) findViewById(R.id.distance);
 		lview1 = (RelativeLayout) findViewById(R.id.view1);
 		lview2 = (RelativeLayout) findViewById(R.id.view2);
-		
+
 		menu.setVisibility(FrameLayout.VISIBLE);
+		ldistance.setVisibility(FrameLayout.VISIBLE);
 		lview1.setVisibility(FrameLayout.GONE);
 		lview2.setVisibility(FrameLayout.GONE);
-		
+
 		// Set up the custom title
 		mTitle = (TextView) findViewById(R.id.title_left_text);
 		mTitle.setText(R.string.app_name);
@@ -158,7 +161,6 @@ public class DriveDroid extends Activity
 		discoverable.setOnClickListener(new AzioneShowMenu(this));
 		exit.setOnClickListener(new AzioneShowMenu(this));
 	}
-
 
 	@Override
 	public void onStart() {
@@ -273,11 +275,13 @@ public class DriveDroid extends Activity
 	 *            A string of text to send.
 	 */
 	protected void sendMessage(String message) {
-		Log.d("ENTRATO","ECCOLO " + message);
+		Log.d("ENTRATO", "ECCOLO " + message);
 		// Check that we're actually connected before trying anything
 		if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
-			/*Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
-					.show();*/
+			/*
+			 * Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
+			 * .show();
+			 */
 			return;
 		}
 
@@ -345,6 +349,7 @@ public class DriveDroid extends Activity
 				String readMessage = new String(readBuf, 0, msg.arg1);
 				mConversationArrayAdapter.add(mConnectedDeviceName + ":  "
 						+ readMessage);
+
 				break;
 			case MESSAGE_DEVICE_NAME:
 				// save the connected device's name
@@ -403,35 +408,42 @@ public class DriveDroid extends Activity
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Numbers distance = new Numbers(this);
 		switch (item.getItemId()) {
 		case R.id.home:
 			menu.setVisibility(FrameLayout.VISIBLE);
+			ldistance.removeAllViewsInLayout();
 			lview1.removeAllViewsInLayout();
 			lview2.removeAllViewsInLayout();
 			return true;
 		case R.id.view1:
+			lview1.removeAllViewsInLayout();
 			lview2.removeAllViewsInLayout();
 			menu.setVisibility(FrameLayout.GONE);
 			MyView1 view1 = new MyView1(this);
+			ldistance.addView(distance);
 			lview1.addView(view1);
 			lview2.removeAllViewsInLayout();
+			ldistance.setVisibility(FrameLayout.VISIBLE);
 			lview1.setVisibility(FrameLayout.VISIBLE);
 			lview2.setVisibility(FrameLayout.GONE);
 			return true;
 		case R.id.view2:
 			lview1.removeAllViewsInLayout();
+			lview2.removeAllViewsInLayout();
 			menu.setVisibility(FrameLayout.GONE);
-			lview1.setVisibility(FrameLayout.GONE);
 			MyView2 view2 = new MyView2(this);
+			ldistance.addView(distance);
 			lview2.addView(view2);
+			lview1.removeAllViewsInLayout();
+			ldistance.setVisibility(FrameLayout.VISIBLE);
 			lview2.setVisibility(FrameLayout.VISIBLE);
+			lview1.setVisibility(FrameLayout.GONE);
 			return true;
 		case R.id.view3:
 			return true;
-
 		}
 		return false;
 	}
-	
-	
+
 }
