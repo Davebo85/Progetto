@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 public class DriveDroid extends Activity {
 	public class AzioneShowMenu implements OnClickListener {
@@ -167,7 +168,6 @@ public class DriveDroid extends Activity {
 		super.onStart();
 		if (D)
 			Log.e(TAG, "++ ON START ++");
-
 		// If BT is not on, request that it be enabled.
 		// setupChat() will then be called during onActivityResult
 		if (!mBluetoothAdapter.isEnabled()) {
@@ -398,17 +398,36 @@ public class DriveDroid extends Activity {
 			}
 		}
 	}
-
+	
+	@Override
+	public void onBackPressed() {
+	   return;
+	}
+	
+	@Override
+	public boolean onMenuOpened(int featureId, Menu men) {
+		// TODO Auto-generated method stub
+		sendMessage("XX0");
+		ldistance.setVisibility(FrameLayout.GONE);
+		lview1.setVisibility(FrameLayout.GONE);
+		lview2.setVisibility(FrameLayout.GONE);
+		ldistance.removeAllViewsInLayout();
+		lview1.removeAllViewsInLayout();
+		lview2.removeAllViewsInLayout();
+		menu.setVisibility(FrameLayout.GONE);
+		return super.onMenuOpened(featureId, men);
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);		
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.option_menu, menu);
 		return true;
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Numbers distance = new Numbers(this);
 		switch (item.getItemId()) {
 		case R.id.home:
 			menu.setVisibility(FrameLayout.VISIBLE);
@@ -421,6 +440,7 @@ public class DriveDroid extends Activity {
 			lview2.removeAllViewsInLayout();
 			menu.setVisibility(FrameLayout.GONE);
 			MyView1 view1 = new MyView1(this);
+			Numbers distance = new Numbers(this);
 			ldistance.addView(distance);
 			lview1.addView(view1);
 			lview2.removeAllViewsInLayout();
@@ -433,7 +453,8 @@ public class DriveDroid extends Activity {
 			lview2.removeAllViewsInLayout();
 			menu.setVisibility(FrameLayout.GONE);
 			MyView2 view2 = new MyView2(this);
-			ldistance.addView(distance);
+			Numbers distance2 = new Numbers(this);
+			ldistance.addView(distance2);
 			lview2.addView(view2);
 			lview1.removeAllViewsInLayout();
 			ldistance.setVisibility(FrameLayout.VISIBLE);
@@ -441,6 +462,8 @@ public class DriveDroid extends Activity {
 			lview1.setVisibility(FrameLayout.GONE);
 			return true;
 		case R.id.view3:
+			sendMessage("XX0");
+			finish();
 			return true;
 		}
 		return false;

@@ -25,8 +25,10 @@ public class MyView2 extends View implements SensorEventListener {
 	private int NUMBER_IMAGES = 3;
 	private Immagine[] img = new Immagine[3];
 	private int cambio_value = 4;
+	private int prev_cambio_value = cambio_value;
 	private int valueOfRotation = 0;
-
+	private String prev_rotation = "";
+	
 	private Paint[] myPaint = new Paint[3];
 
 	private Bitmap cruscotto;
@@ -138,13 +140,20 @@ public class MyView2 extends View implements SensorEventListener {
 				case MotionEvent.ACTION_UP:
 				case MotionEvent.ACTION_POINTER_UP:
 					if (img[j].poi == action >> MotionEvent.ACTION_POINTER_ID_SHIFT) {
-						if (j == img.length - 1) {
+						switch (j) {
+						case 2:
 							img[j].rot = 0;
-						} else if (j == 1) {
+							break;
+						case 1:
 							led = !led;
-						}						
-						if (j == 2) {
-							img[j].rot = 0;
+							if (led) {
+								superActivity.sendMessage("LL2");
+							} else {
+								superActivity.sendMessage("LL0");
+							}
+							break;
+						default:
+							break;
 						}
 						img[j].poi = -1;
 						img[j].drag = false;
@@ -156,26 +165,40 @@ public class MyView2 extends View implements SensorEventListener {
 							&& event.getPointerId(i) == img[j].poi) {
 						switch (j) {
 						case 0:
+							String mess = "";
 							img[0].y = y_p - img[0].getImage(-1).getWidth() / 2;
-							Log.d("TTTTTTTTTTTT", "    x = " + img[0].x);
+//							Log.d("TTTTTTTTTTTT", "    x = " + img[0].x);
 							if (y_p > 212 && y_p < 268) {
 								cambio_value = 4;
+								mess = "FW0";
 							} else if (y_p <= 212 && y_p > 156) {
 								cambio_value = 5;
+								mess = "FW1";
 							} else if (y_p <= 156 && y_p > 100) {
 								cambio_value = 6;
+								mess = "FW2";
 							} else if (y_p <= 100 && y_p > 44) {
 								cambio_value = 7;
+								mess = "FW3";
 							} else if (y_p <= 44) {
 								cambio_value = 8;
+								mess = "FW4";
 							} else if (y_p >= 268 && y_p < 324) {
 								cambio_value = 3;
+								mess = "BW1";
 							} else if (y_p >= 324 && y_p < 380) {
 								cambio_value = 2;
+								mess = "BW2";
 							} else if (y_p >= 380 && y_p < 436) {
 								cambio_value = 1;
+								mess = "BW3";
 							} else if (y_p >= 436) {
 								cambio_value = 0;
+								mess = "BW4";
+							}
+							if (prev_cambio_value != cambio_value) {
+								superActivity.sendMessage(mess);
+								prev_cambio_value = cambio_value;
 							}
 							break;
 						case 1:
@@ -185,7 +208,6 @@ public class MyView2 extends View implements SensorEventListener {
 						default:
 							break;
 						}
-						superActivity.sendMessage("");
 					}
 				}
 					invalidate();
@@ -233,12 +255,38 @@ public class MyView2 extends View implements SensorEventListener {
 	public void onSensorChanged(SensorEvent event) {
 		float[] f = event.values;
 		for (int i = 0; i < 3; i++) {
-			Log.d("SENSORE", "Valore " + i + " :" + " " + f[i]);
+//			Log.d("SENSORE", "Valore " + i + " :" + " " + f[i]);
 			if (i == 1) {
 				valueOfRotation = (int) -((1.5 * f[i]));
 			}
 			valueOfRotation = (valueOfRotation > 100) ? 100 : valueOfRotation;
 			valueOfRotation = (valueOfRotation < -100) ? -100 : valueOfRotation;
+//			Log.d(TAG, " ANGOLO = " + valueOfRotation + " angolo intero " + (int) valueOfRotation);
+			int angle = valueOfRotation;
+			String mess2 = "";
+			if (angle >= -15 && angle <= 15) {
+				mess2 = "SX0";
+			} else if (angle >= -35 && angle < -15) {
+				mess2 = "SX1";
+			} else if (angle >= -60 && angle < -35) {
+				mess2 = "SX2";
+			} else if (angle >= -80 && angle < -60) {
+				mess2 = "SX3";
+			} else if (angle >= -100 && angle < -80) {
+				mess2 = "SX4";
+			} else if (angle > 15 && angle <= 35) {
+				mess2 = "DX1";
+			} else if (angle > 35 && angle <= 60) {
+				mess2 = "DX2";
+			} else if (angle > 60 && angle <= 80) {
+				mess2 = "DX3";
+			} else if (angle > 80 && angle <= 100) {
+				mess2 = "DX4";
+			}								
+			if (prev_rotation != mess2) {
+				superActivity.sendMessage(mess2);
+				prev_rotation = mess2;
+			}
 			invalidate();
 		}
 	}
