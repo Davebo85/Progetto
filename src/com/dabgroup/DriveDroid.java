@@ -15,9 +15,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,7 +28,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 public class DriveDroid extends Activity {
 	public class AzioneShowMenu implements OnClickListener {
@@ -58,6 +57,7 @@ public class DriveDroid extends Activity {
 				ldistance.setVisibility(FrameLayout.VISIBLE);
 				lview1.setVisibility(FrameLayout.VISIBLE);
 				lview2.setVisibility(FrameLayout.GONE);
+				lview3.setVisibility(FrameLayout.GONE);
 				break;
 			case R.id.discoverable:
 				ensureDiscoverable();
@@ -76,10 +76,11 @@ public class DriveDroid extends Activity {
 	public RelativeLayout ldistance;
 	public RelativeLayout lview1;
 	public RelativeLayout lview2;
+	public RelativeLayout lview3;
 	private Activity activity;
 	// Debugging
 	private static final String TAG = "BluetoothChat";
-	private static final boolean D = true;
+	static final boolean D = true;
 
 	// Message types sent from the BluetoothChatService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
@@ -105,7 +106,7 @@ public class DriveDroid extends Activity {
 	// Name of the connected device
 	private String mConnectedDeviceName = null;
 	// Array adapter for the conversation thread
-	private ArrayAdapter<String> mConversationArrayAdapter;
+	public ArrayAdapter<String> mConversationArrayAdapter;
 	// String buffer for outgoing messages
 	private StringBuffer mOutStringBuffer;
 	// Local Bluetooth adapter
@@ -131,11 +132,13 @@ public class DriveDroid extends Activity {
 		ldistance = (RelativeLayout) findViewById(R.id.distance);
 		lview1 = (RelativeLayout) findViewById(R.id.view1);
 		lview2 = (RelativeLayout) findViewById(R.id.view2);
+		lview3 = (RelativeLayout) findViewById(R.id.view3);
 
 		menu.setVisibility(FrameLayout.VISIBLE);
-		ldistance.setVisibility(FrameLayout.VISIBLE);
+		ldistance.setVisibility(FrameLayout.GONE);
 		lview1.setVisibility(FrameLayout.GONE);
 		lview2.setVisibility(FrameLayout.GONE);
+		lview3.setVisibility(FrameLayout.GONE);
 
 		// Set up the custom title
 		mTitle = (TextView) findViewById(R.id.title_left_text);
@@ -157,6 +160,7 @@ public class DriveDroid extends Activity {
 		Button start = (Button) findViewById(R.id.start);
 		Button discoverable = (Button) findViewById(R.id.discoverable);
 		ImageButton exit = (ImageButton) findViewById(R.id.exit);
+
 		scan.setOnClickListener(new AzioneShowMenu(this));
 		start.setOnClickListener(new AzioneShowMenu(this));
 		discoverable.setOnClickListener(new AzioneShowMenu(this));
@@ -203,26 +207,27 @@ public class DriveDroid extends Activity {
 
 	private void setupChat() {
 		Log.d(TAG, "setupChat()");
-		/*
-		 * // Initialize the array adapter for the conversation thread
-		 * mConversationArrayAdapter = new ArrayAdapter<String>(this,
-		 * R.layout.message); mConversationView = (ListView)
-		 * findViewById(R.id.in);
-		 * mConversationView.setAdapter(mConversationArrayAdapter);
-		 * 
-		 * // Initialize the compose field with a listener for the return key
-		 * mOutEditText = (EditText) findViewById(R.id.edit_text_out);
-		 * mOutEditText.setOnEditorActionListener(mWriteListener);
-		 * 
-		 * // Initialize the send button with a listener that for click events
-		 * mSendButton = (Button) findViewById(R.id.button_send);
-		 * mSendButton.setOnClickListener(new OnClickListener() { public void
-		 * onClick(View v) { // Send a message using content of the edit text
-		 * widget TextView view = (TextView) findViewById(R.id.edit_text_out);
-		 * String message = view.getText().toString(); sendMessage(message); }
-		 * });
-		 */
+		
+		// Initialize the array adapter for the conversation thread
+		mConversationArrayAdapter = new ArrayAdapter<String>(this,
+				R.layout.message);
+		mConversationView = (ListView) findViewById(R.id.in);
+		mConversationView.setAdapter(mConversationArrayAdapter);
 
+		// Initialize the compose field with a listener for the return key
+		mOutEditText = (EditText) findViewById(R.id.edit_text_out);
+		mOutEditText.setOnEditorActionListener(mWriteListener);
+
+		// Initialize the send button with a listener that for click events
+		mSendButton = (Button) findViewById(R.id.button_send);
+		mSendButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				// Send a message using content of the edit text widget
+				TextView view = (TextView) findViewById(R.id.edit_text_out);
+				String message = view.getText().toString();
+				sendMessage(message);
+			}
+		});
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		mChatService = new BluetoothChatService(this, mHandler);
 
@@ -292,8 +297,8 @@ public class DriveDroid extends Activity {
 			mChatService.write(send);
 
 			// Reset out string buffer to zero and clear the edit text field
-			mOutStringBuffer.setLength(0);
-			mOutEditText.setText(mOutStringBuffer);
+			 mOutStringBuffer.setLength(0);
+			 mOutEditText.setText(mOutStringBuffer);
 		}
 	}
 
@@ -398,12 +403,12 @@ public class DriveDroid extends Activity {
 			}
 		}
 	}
-	
+
 	@Override
 	public void onBackPressed() {
-	   return;
+		return;
 	}
-	
+
 	@Override
 	public boolean onMenuOpened(int featureId, Menu men) {
 		// TODO Auto-generated method stub
@@ -411,60 +416,60 @@ public class DriveDroid extends Activity {
 		ldistance.setVisibility(FrameLayout.GONE);
 		lview1.setVisibility(FrameLayout.GONE);
 		lview2.setVisibility(FrameLayout.GONE);
+		lview3.setVisibility(FrameLayout.GONE);
 		ldistance.removeAllViewsInLayout();
 		lview1.removeAllViewsInLayout();
 		lview2.removeAllViewsInLayout();
 		menu.setVisibility(FrameLayout.GONE);
 		return super.onMenuOpened(featureId, men);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);		
+		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.option_menu, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.home:
 			menu.setVisibility(FrameLayout.VISIBLE);
-			ldistance.removeAllViewsInLayout();
-			lview1.removeAllViewsInLayout();
-			lview2.removeAllViewsInLayout();
 			return true;
 		case R.id.view1:
-			lview1.removeAllViewsInLayout();
-			lview2.removeAllViewsInLayout();
 			menu.setVisibility(FrameLayout.GONE);
 			MyView1 view1 = new MyView1(this);
 			Numbers distance = new Numbers(this);
 			ldistance.addView(distance);
 			lview1.addView(view1);
-			lview2.removeAllViewsInLayout();
 			ldistance.setVisibility(FrameLayout.VISIBLE);
 			lview1.setVisibility(FrameLayout.VISIBLE);
 			lview2.setVisibility(FrameLayout.GONE);
+			lview3.setVisibility(FrameLayout.GONE);
 			return true;
 		case R.id.view2:
-			lview1.removeAllViewsInLayout();
-			lview2.removeAllViewsInLayout();
 			menu.setVisibility(FrameLayout.GONE);
 			MyView2 view2 = new MyView2(this);
 			Numbers distance2 = new Numbers(this);
 			ldistance.addView(distance2);
 			lview2.addView(view2);
-			lview1.removeAllViewsInLayout();
 			ldistance.setVisibility(FrameLayout.VISIBLE);
 			lview2.setVisibility(FrameLayout.VISIBLE);
 			lview1.setVisibility(FrameLayout.GONE);
+			lview3.setVisibility(FrameLayout.GONE);
 			return true;
 		case R.id.view3:
+			lview3.setVisibility(FrameLayout.VISIBLE);
+			lview3.bringToFront();
+			lview1.setVisibility(FrameLayout.GONE);
+			lview2.setVisibility(FrameLayout.GONE);
+			return true;
+		case R.id.uscita:
 			sendMessage("XX0");
 			finish();
-			return true;
+			break;
 		}
 		return false;
 	}
