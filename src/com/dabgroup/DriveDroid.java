@@ -49,7 +49,8 @@ public class DriveDroid extends Activity {
 				break;
 			case R.id.start:
 				MyView1 view1 = new MyView1(activity);
-				Numbers distance = new Numbers(activity);
+//				Numbers distance = new Numbers(activity);
+				distance = new Numbers(activity);
 				ldistance.addView(distance);
 				lview1.addView(view1);
 				lview2.removeAllViewsInLayout();
@@ -63,6 +64,7 @@ public class DriveDroid extends Activity {
 				ensureDiscoverable();
 				break;
 			case R.id.exit:
+				mBluetoothAdapter.disable(); 
 				finish();
 				break;
 			default:
@@ -78,6 +80,7 @@ public class DriveDroid extends Activity {
 	public RelativeLayout lview2;
 	public RelativeLayout lview3;
 	private Activity activity;
+	private Numbers distance;
 	// Debugging
 	private static final String TAG = "BluetoothChat";
 	static final boolean D = true;
@@ -136,6 +139,7 @@ public class DriveDroid extends Activity {
 
 		menu.setVisibility(FrameLayout.VISIBLE);
 		ldistance.setVisibility(FrameLayout.GONE);
+		
 		lview1.setVisibility(FrameLayout.GONE);
 		lview2.setVisibility(FrameLayout.GONE);
 		lview3.setVisibility(FrameLayout.GONE);
@@ -280,7 +284,7 @@ public class DriveDroid extends Activity {
 	 *            A string of text to send.
 	 */
 	protected void sendMessage(String message) {
-		Log.d("ENTRATO", "ECCOLO " + message);
+		Log.d("ENTRATO", "Messaggio: " + message);
 		// Check that we're actually connected before trying anything
 		if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
 			/*
@@ -320,7 +324,8 @@ public class DriveDroid extends Activity {
 	};
 
 	// The Handler that gets information back from the BluetoothChatService
-	private final Handler mHandler = new Handler() {
+	public final Handler mHandler = new Handler() {
+		
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -354,7 +359,11 @@ public class DriveDroid extends Activity {
 				String readMessage = new String(readBuf, 0, msg.arg1);
 				mConversationArrayAdapter.add(mConnectedDeviceName + ":  "
 						+ readMessage);
-
+				if (ldistance.isShown())
+				{
+					Log.d("ATTIVO",""+readMessage);
+					distance.setDistance(readMessage);
+				}
 				break;
 			case MESSAGE_DEVICE_NAME:
 				// save the connected device's name
@@ -441,7 +450,7 @@ public class DriveDroid extends Activity {
 		case R.id.view1:
 			menu.setVisibility(FrameLayout.GONE);
 			MyView1 view1 = new MyView1(this);
-			Numbers distance = new Numbers(this);
+			distance = new Numbers(this);
 			ldistance.addView(distance);
 			lview1.addView(view1);
 			ldistance.setVisibility(FrameLayout.VISIBLE);
@@ -452,8 +461,8 @@ public class DriveDroid extends Activity {
 		case R.id.view2:
 			menu.setVisibility(FrameLayout.GONE);
 			MyView2 view2 = new MyView2(this);
-			Numbers distance2 = new Numbers(this);
-			ldistance.addView(distance2);
+			distance = new Numbers(this);
+			ldistance.addView(distance);
 			lview2.addView(view2);
 			ldistance.setVisibility(FrameLayout.VISIBLE);
 			lview2.setVisibility(FrameLayout.VISIBLE);
@@ -468,6 +477,7 @@ public class DriveDroid extends Activity {
 			return true;
 		case R.id.uscita:
 			sendMessage("XX0");
+			mBluetoothAdapter.disable();
 			finish();
 			break;
 		}

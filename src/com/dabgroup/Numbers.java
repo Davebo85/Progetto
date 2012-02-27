@@ -30,16 +30,15 @@ public class Numbers extends View {
 		int i = d.length();
 		switch (i) {
 		case 1:
-			value = " " + " " + d.charAt(0);
+			value = " " + d.charAt(0);
 			break;
 		case 2:
-			value = " " + d.charAt(0) + d.charAt(1);
-			break;
-		case 3:
 			value = d;
 			break;
+//		case 3:
+//			value = d;
+//			break;
 		}
-		spaces = 3-i;
 		invalidate();
 	}
 
@@ -55,7 +54,7 @@ public class Numbers extends View {
 		 for (int i = original.length - 1; i >= 0 ; i--)
 		 {
 			 original[i] = Character.digit(value.charAt(i), 10);
-			 if (original[i] == -1)
+			 if (!Character.isDigit(value.charAt(i)))
 			 {
 				 canvas.drawBitmap(nums[nums.length-1], startx + 13 + (i * 69), starty + 7, paintY);
 			 } else {
