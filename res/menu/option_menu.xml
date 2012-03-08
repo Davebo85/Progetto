@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/home"
-          android:icon="@android:drawable/arrow_up_float"
+          android:icon="@drawable/home"
           android:title="Home" />
     <item android:id="@+id/view1"
-          android:icon="@android:drawable/ic_menu_search"
+          android:icon="@drawable/multitouch"
           android:title="Multitouch" />
     <item android:id="@+id/view2"
-          android:icon="@android:drawable/ic_menu_mylocation"
+          android:icon="@drawable/orientation"
           android:title="Orientation" />
     <item android:id="@+id/view3"
           android:title="Shell"
-          android:icon="@android:drawable/btn_star" />
+          android:icon="@drawable/shellvoice" />
     <item android:id="@+id/uscita"
           android:title="Exit"
-          android:icon="@android:drawable/ic_menu_close_clear_cancel" />
+          android:icon="@drawable/exit" />
 </menu>

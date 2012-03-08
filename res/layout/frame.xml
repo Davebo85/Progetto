@@ -106,13 +106,13 @@
                 android:layout_weight="0.2"
                 android:orientation="vertical" >
 
-                <ImageButton
-                    android:id="@+id/exit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/menu_nopress" />
+                <!-- <ImageButton -->
+                <!-- android:id="@+id/exit" -->
+                <!-- android:layout_width="wrap_content" -->
+                <!-- android:layout_height="wrap_content" -->
+                <!-- android:layout_gravity="right" -->
+                <!-- android:background="@android:color/transparent" -->
+                <!-- android:src="@drawable/menu_nopress" /> -->
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -143,35 +143,62 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="horizontal" >
-
+
         <Button
             android:id="@+id/button_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
             android:text="Send" />
+
+        <Button
+            android:id="@+id/button_speech"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:onClick="speakButtonClicked"
+            android:text="Speech" />
+
+        <TextView
+            android:id="@+id/textViewBody"
+            android:textColor="#ff00ffff"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/button_send"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/listViewMatches" />
+
+        <ListView
+            android:id="@+id/listViewMatches"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/button_speech"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true" />
 
         <EditText
             android:id="@+id/edit_text_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/button_send" >
+            android:layout_below="@+id/textViewBody"
+            android:layout_toLeftOf="@+id/button_speech"
+            android:layout_toRightOf="@+id/button_send"
+            android:hint="Insert message here." />
+
+<!--         <ListView -->
+<!--             android:id="@+id/in" -->
+<!--             android:layout_width="match_parent" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:layout_above="@+id/button_send" -->
+<!--             android:layout_alignParentLeft="true" -->
+<!--             android:layout_alignParentTop="true" -->
+<!--             android:scrollbars="vertical" > -->
+<!--         </ListView> -->
 
-            <requestFocus />
-        </EditText>
-
-        <ListView
-            android:id="@+id/in"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/button_send"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:scrollbars="vertical" >
-        </ListView>
     </RelativeLayout>
 
 </FrameLayout>

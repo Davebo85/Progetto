@@ -1,13 +1,19 @@
 package com.dabgroup;
 
+import java.util.ArrayList;
+import java.util.List;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.speech.RecognizerIntent;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -18,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +35,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class DriveDroid extends Activity {
 	public class AzioneShowMenu implements OnClickListener {
@@ -49,7 +57,7 @@ public class DriveDroid extends Activity {
 				break;
 			case R.id.start:
 				MyView1 view1 = new MyView1(activity);
-//				Numbers distance = new Numbers(activity);
+				// Numbers distance = new Numbers(activity);
 				distance = new Numbers(activity);
 				ldistance.addView(distance);
 				lview1.addView(view1);
@@ -64,7 +72,7 @@ public class DriveDroid extends Activity {
 				ensureDiscoverable();
 				break;
 			case R.id.exit:
-				mBluetoothAdapter.disable(); 
+				mBluetoothAdapter.disable();
 				finish();
 				break;
 			default:
@@ -102,20 +110,27 @@ public class DriveDroid extends Activity {
 
 	// Layout Views
 	private TextView mTitle;
-	private ListView mConversationView;
+	// private ListView mConversationView;
 	private EditText mOutEditText;
 	private Button mSendButton;
 
 	// Name of the connected device
 	private String mConnectedDeviceName = null;
 	// Array adapter for the conversation thread
-	public ArrayAdapter<String> mConversationArrayAdapter;
+	// public ArrayAdapter<String> mConversationArrayAdapter;
 	// String buffer for outgoing messages
 	private StringBuffer mOutStringBuffer;
 	// Local Bluetooth adapter
 	private BluetoothAdapter mBluetoothAdapter = null;
 	// Member object for the chat services
 	private BluetoothChatService mChatService = null;
+
+	// mie variabili
+	public ListView wordsList;
+	public TextView messages;
+	public Button mSpeakButton;
+	public int leftRight = 0, backForward = 0;
+	public static final int REQUEST_CODE = 1234;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -139,7 +154,7 @@ public class DriveDroid extends Activity {
 
 		menu.setVisibility(FrameLayout.VISIBLE);
 		ldistance.setVisibility(FrameLayout.GONE);
-		
+
 		lview1.setVisibility(FrameLayout.GONE);
 		lview2.setVisibility(FrameLayout.GONE);
 		lview3.setVisibility(FrameLayout.GONE);
@@ -163,12 +178,118 @@ public class DriveDroid extends Activity {
 		Button scan = (Button) findViewById(R.id.scan);
 		Button start = (Button) findViewById(R.id.start);
 		Button discoverable = (Button) findViewById(R.id.discoverable);
-		ImageButton exit = (ImageButton) findViewById(R.id.exit);
+		// ImageButton exit = (ImageButton) findViewById(R.id.exit);
 
 		scan.setOnClickListener(new AzioneShowMenu(this));
 		start.setOnClickListener(new AzioneShowMenu(this));
 		discoverable.setOnClickListener(new AzioneShowMenu(this));
-		exit.setOnClickListener(new AzioneShowMenu(this));
+		// exit.setOnClickListener(new AzioneShowMenu(this));
+
+		/** riprovo a fare danno -> OnCreate **/
+
+		mSpeakButton = (Button) findViewById(R.id.button_speech);
+		mSendButton = (Button) findViewById(R.id.button_send);
+		wordsList = (ListView) findViewById(R.id.listViewMatches);
+		messages = (TextView) findViewById(R.id.textViewBody);
+		messages.setMovementMethod(new ScrollingMovementMethod());
+		messages.append("\n");
+		messages.append("\n");
+		mOutEditText = (EditText) findViewById(R.id.edit_text_out);
+
+		// Disable button if no recognition service is present
+		PackageManager pm = getPackageManager();
+		List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(
+				RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+		if (activities.size() == 0) {
+			mSpeakButton.setEnabled(false);
+			mSpeakButton.setText("Recognizer not present");
+		}
+
+		wordsList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				String item = ((TextView) arg1).getText().toString();
+				messages.append(item + "\n");
+				if (item == "avanti") {
+					// messages.append(item + "\n");
+					manageDirections(leftRight, backForward++);
+				}
+
+				if (item == "indietro") {
+					// messages.append(item + "\n");
+					manageDirections(leftRight, backForward--);
+				}
+
+				if (item == "destra") {
+					// messages.append(item + "\n");
+					manageDirections(leftRight++, backForward);
+				}
+
+				if (item == "sinistra") {
+					// messages.append(item + "\n");
+					manageDirections(leftRight--, backForward);
+				}
+				wordsList.setVisibility(FrameLayout.GONE);
+
+			}
+		});
+
+		mSendButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				String text = mOutEditText.getText().toString();
+
+				if (text.equals("help") || text.equals("help"))
+					messages.append("Comandi possibili: \n"
+							+ getString(R.string.FW) + "\n"
+							+ getString(R.string.BW) + "\n"
+							+ getString(R.string.RI) + "\n"
+							+ getString(R.string.LE) + "\n"
+							+ "ripetendo il comando aumenterà l'intensità.");
+
+				if (text == "avanti" || text == "Avanti" || text == "avanti "
+						|| text == "Avanti ") {
+					messages.append(text + "\n");
+					manageDirections(leftRight, backForward++);
+				}
+
+				if (text == "indietro" || text == "Indietro"
+						|| text == "indietro " || text == "Indietro ") {
+					messages.append(text + "\n");
+					manageDirections(leftRight, backForward--);
+				}
+
+				if (text == "destra" || text == "Destra" || text == "destra "
+						|| text == "Destra ") {
+					messages.append(text + "\n");
+					manageDirections(leftRight++, backForward);
+				}
+
+				if (text == "sinistra" || text == "Sinistra"
+						|| text == "sinistra " || text == "Sinistra ") {
+					messages.append(text + "\n");
+					manageDirections(leftRight--, backForward);
+				}
+
+				else {
+					messages.append(text + "\n");
+					mOutEditText.append("");
+					if (text == "FW0" || text == "FW1" || text == "FW2"
+							|| text == "FW3" || text == "FW4") {
+						sendMessage(text);
+					}
+					if (text == "BW0" || text == "BW1" || text == "BW2"
+							|| text == "BW3" || text == "BW4") {
+						sendMessage(text);
+					}
+				}
+				mOutEditText.setText("");
+			}
+		});
 	}
 
 	@Override
@@ -211,27 +332,27 @@ public class DriveDroid extends Activity {
 
 	private void setupChat() {
 		Log.d(TAG, "setupChat()");
-		
+
 		// Initialize the array adapter for the conversation thread
-		mConversationArrayAdapter = new ArrayAdapter<String>(this,
-				R.layout.message);
-		mConversationView = (ListView) findViewById(R.id.in);
-		mConversationView.setAdapter(mConversationArrayAdapter);
+		// mConversationArrayAdapter = new ArrayAdapter<String>(this,
+		// R.layout.message);
+		// mConversationView = (ListView) findViewById(R.id.in);
+		// mConversationView.setAdapter(mConversationArrayAdapter);
 
 		// Initialize the compose field with a listener for the return key
-		mOutEditText = (EditText) findViewById(R.id.edit_text_out);
+		// mOutEditText = (EditText) findViewById(R.id.edit_text_out);
 		mOutEditText.setOnEditorActionListener(mWriteListener);
 
 		// Initialize the send button with a listener that for click events
-		mSendButton = (Button) findViewById(R.id.button_send);
-		mSendButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				// Send a message using content of the edit text widget
-				TextView view = (TextView) findViewById(R.id.edit_text_out);
-				String message = view.getText().toString();
-				sendMessage(message);
-			}
-		});
+		// mSendButton = (Button) findViewById(R.id.button_send);
+		// mSendButton.setOnClickListener(new OnClickListener() {
+		// public void onClick(View v) {
+		// // Send a message using content of the edit text widget
+		// TextView view = (TextView) findViewById(R.id.edit_text_out);
+		// String message = view.getText().toString();
+		// sendMessage(message);
+		// }
+		// });
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		mChatService = new BluetoothChatService(this, mHandler);
 
@@ -301,8 +422,8 @@ public class DriveDroid extends Activity {
 			mChatService.write(send);
 
 			// Reset out string buffer to zero and clear the edit text field
-			 mOutStringBuffer.setLength(0);
-			 mOutEditText.setText(mOutStringBuffer);
+			mOutStringBuffer.setLength(0);
+			mOutEditText.setText(mOutStringBuffer);
 		}
 	}
 
@@ -325,7 +446,7 @@ public class DriveDroid extends Activity {
 
 	// The Handler that gets information back from the BluetoothChatService
 	public final Handler mHandler = new Handler() {
-		
+
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -336,7 +457,7 @@ public class DriveDroid extends Activity {
 				case BluetoothChatService.STATE_CONNECTED:
 					mTitle.setText(R.string.title_connected_to);
 					mTitle.append(mConnectedDeviceName);
-					mConversationArrayAdapter.clear();
+					// mConversationArrayAdapter.clear();
 					break;
 				case BluetoothChatService.STATE_CONNECTING:
 					mTitle.setText(R.string.title_connecting);
@@ -351,17 +472,16 @@ public class DriveDroid extends Activity {
 				byte[] writeBuf = (byte[]) msg.obj;
 				// construct a string from the buffer
 				String writeMessage = new String(writeBuf);
-				mConversationArrayAdapter.add("Me:  " + writeMessage);
+				// mConversationArrayAdapter.add("Me:  " + writeMessage);
 				break;
 			case MESSAGE_READ:
 				byte[] readBuf = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
 				String readMessage = new String(readBuf, 0, msg.arg1);
-				mConversationArrayAdapter.add(mConnectedDeviceName + ":  "
-						+ readMessage);
-				if (ldistance.isShown())
-				{
-					Log.d("ATTIVO",""+readMessage);
+				// mConversationArrayAdapter.add(mConnectedDeviceName + ":  "
+				// + readMessage);
+				if (ldistance.isShown()) {
+					Log.d("ATTIVO", "" + readMessage);
 					distance.setDistance(readMessage);
 				}
 				break;
@@ -411,6 +531,16 @@ public class DriveDroid extends Activity {
 				finish();
 			}
 		}
+		if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+			// Populate the wordsList with the String values the recognition
+			// engine thought it heard
+			ArrayList<String> matches = data
+					.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+			wordsList.setAdapter(new ArrayAdapter<String>(this,
+					android.R.layout.simple_list_item_1, matches));
+			wordsList.setVisibility(FrameLayout.VISIBLE);
+		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
@@ -482,6 +612,61 @@ public class DriveDroid extends Activity {
 			break;
 		}
 		return false;
+	}
+
+	public void manageDirections(int lr, int bf) {
+		if (lr <= -4)
+			sendMessage("SX4");
+		if (lr == -3)
+			sendMessage("SX3");
+		if (lr == -2)
+			sendMessage("SX2");
+		if (lr == -1)
+			sendMessage("SX1");
+		if (lr == 0)
+			sendMessage("SX0");
+		if (lr == +1)
+			sendMessage("DX1");
+		if (lr == +2)
+			sendMessage("DX2");
+		if (lr == +3)
+			sendMessage("DX3");
+		if (lr >= +4)
+			sendMessage("DX4");
+		if (bf <= -4)
+			sendMessage("BW4");
+		if (bf == -3)
+			sendMessage("BW3");
+		if (bf == -2)
+			sendMessage("BW2");
+		if (bf == -1)
+			sendMessage("BW1");
+		if (bf == 0)
+			sendMessage("FW0");
+		if (bf == +1)
+			sendMessage("FW1");
+		if (bf == +2)
+			sendMessage("FW2");
+		if (bf == +3)
+			sendMessage("FW3");
+		if (bf >= +4)
+			sendMessage("FW4");
+
+	}
+
+	public void speakButtonClicked(View v) {
+		startVoiceRecognitionActivity();
+
+	}
+
+	private void startVoiceRecognitionActivity() {
+		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+				RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+		intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+				"Voice recognition Demo...");
+		startActivityForResult(intent, REQUEST_CODE);
+
 	}
 
 }
