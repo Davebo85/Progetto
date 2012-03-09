@@ -129,7 +129,8 @@ public class DriveDroid extends Activity {
 	public ListView wordsList;
 	public TextView messages;
 	public Button mSpeakButton;
-	public int leftRight = 0, backForward = 0;
+	public int leftRight = 0;
+	public int backForward = 0;
 	public static final int REQUEST_CODE = 1234;
 
 	@Override
@@ -154,7 +155,6 @@ public class DriveDroid extends Activity {
 
 		menu.setVisibility(FrameLayout.VISIBLE);
 		ldistance.setVisibility(FrameLayout.GONE);
-
 		lview1.setVisibility(FrameLayout.GONE);
 		lview2.setVisibility(FrameLayout.GONE);
 		lview3.setVisibility(FrameLayout.GONE);
@@ -192,8 +192,7 @@ public class DriveDroid extends Activity {
 		wordsList = (ListView) findViewById(R.id.listViewMatches);
 		messages = (TextView) findViewById(R.id.textViewBody);
 		messages.setMovementMethod(new ScrollingMovementMethod());
-		messages.append("\n");
-		messages.append("\n");
+		messages.append("\n\n");
 		mOutEditText = (EditText) findViewById(R.id.edit_text_out);
 
 		// Disable button if no recognition service is present
@@ -211,25 +210,27 @@ public class DriveDroid extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				String item = ((TextView) arg1).getText().toString();
-				messages.append(item + "\n");
-				if (item == "avanti") {
-					// messages.append(item + "\n");
-					manageDirections(leftRight, backForward++);
-				}
-
-				if (item == "indietro") {
-					// messages.append(item + "\n");
-					manageDirections(leftRight, backForward--);
-				}
-
-				if (item == "destra") {
-					// messages.append(item + "\n");
-					manageDirections(leftRight++, backForward);
-				}
-
-				if (item == "sinistra") {
-					// messages.append(item + "\n");
-					manageDirections(leftRight--, backForward);
+				if (item.equals("help") || item.equals("help ")
+						|| item.equals("Help") || item.equals("Help ")
+						|| item.equals("aiuto") || item.equals("aiuto ")
+						|| item.equals("Aiuto") || item.equals("Aiuto ")) {
+					messages.append("Comandi possibili: \n"
+							+ getString(R.string.FW) + "\n"
+							+ getString(R.string.BW) + "\n"
+							+ getString(R.string.RI) + "\n"
+							+ getString(R.string.LE) + "\n"
+							+ getString(R.string.ST) + "\n"
+							+ "ripetendo il comando aumentera' l'intensita'.");
+				} else if (item.equals("avanti")) {
+					controllo(item, 1, 0);
+				} else if (item.equals("indietro")) {
+					controllo(item, -1, 0);
+				} else if (item.equals("destra")) {
+					controllo(item, 0, 1);
+				} else if (item.equals("sinistra")) {
+					controllo(item, 0, -1);
+				} else if (item.equals("stop")) {
+					sendMessage("XX0");
 				}
 				wordsList.setVisibility(FrameLayout.GONE);
 
@@ -240,56 +241,58 @@ public class DriveDroid extends Activity {
 
 			@Override
 			public void onClick(View v) {
+
 				// TODO Auto-generated method stub
 				String text = mOutEditText.getText().toString();
-
-				if (text.equals("help") || text.equals("help"))
+				if (text.equals("help") || text.equals("help ")
+						|| text.equals("Help") || text.equals("Help ")
+						|| text.equals("aiuto") || text.equals("aiuto ")
+						|| text.equals("Aiuto") || text.equals("Aiuto ")) {
 					messages.append("Comandi possibili: \n"
 							+ getString(R.string.FW) + "\n"
 							+ getString(R.string.BW) + "\n"
 							+ getString(R.string.RI) + "\n"
 							+ getString(R.string.LE) + "\n"
-							+ "ripetendo il comando aumenterà l'intensità.");
-
-				if (text == "avanti" || text == "Avanti" || text == "avanti "
-						|| text == "Avanti ") {
+							+ getString(R.string.ST) + "\n"
+							+ "ripetendo il comando aumentera' l'intensita'.");
+				} else if (text.equals("avanti") || text.equals("Avanti")
+						|| text.equals("avanti ") || text.equals("Avanti ")) {
+					controllo(text, 1, 0);
+				} else if (text.equals("indietro") || text.equals("Indietro")
+						|| text.equals("indietro ") || text.equals("Indietro ")) {
+					controllo(text, -1, 0);
+				} else if (text.equals("destra") || text.equals("Destra")
+						|| text.equals("destra ") || text.equals("Destra ")) {
+					controllo(text, 0, 1);
+				} else if (text.equals("sinistra") || text.equals("Sinistra")
+						|| text.equals("sinistra ") || text.equals("Sinistra ")) {
+					controllo(text, 0, -1);
+				} else if (text.equals("stop") || text.equals("Stop")
+						|| text.equals("stop ") || text.equals("Stop ")) {
 					messages.append(text + "\n");
-					manageDirections(leftRight, backForward++);
-				}
-
-				if (text == "indietro" || text == "Indietro"
-						|| text == "indietro " || text == "Indietro ") {
-					messages.append(text + "\n");
-					manageDirections(leftRight, backForward--);
-				}
-
-				if (text == "destra" || text == "Destra" || text == "destra "
-						|| text == "Destra ") {
-					messages.append(text + "\n");
-					manageDirections(leftRight++, backForward);
-				}
-
-				if (text == "sinistra" || text == "Sinistra"
-						|| text == "sinistra " || text == "Sinistra ") {
-					messages.append(text + "\n");
-					manageDirections(leftRight--, backForward);
-				}
-
-				else {
-					messages.append(text + "\n");
-					mOutEditText.append("");
-					if (text == "FW0" || text == "FW1" || text == "FW2"
-							|| text == "FW3" || text == "FW4") {
-						sendMessage(text);
-					}
-					if (text == "BW0" || text == "BW1" || text == "BW2"
-							|| text == "BW3" || text == "BW4") {
-						sendMessage(text);
-					}
-				}
+					sendMessage("XX0");
+				} else if (text.equals("FW0") || text.equals("FW1")
+						|| text.equals("FW2") || text.equals("FW3")
+						|| text.equals("FW4")) {
+					sendMessage(text);
+				} else if (text.equals("BW0") || text.equals("BW1")
+						|| text.equals("BW2") || text.equals("BW3")
+						|| text.equals("BW4")) {
+					sendMessage(text);
+				} else
+					Toast.makeText(getApplicationContext(),
+							"Comando non valido, utilizzare il comando 'help'",
+							Toast.LENGTH_SHORT).show();
 				mOutEditText.setText("");
 			}
 		});
+	}
+
+	public void controllo(String testo, int a, int b) {
+		messages.append(testo + "\n");
+		backForward += a;
+		leftRight += b;
+		manageDirections(leftRight, backForward);
 	}
 
 	@Override
@@ -315,16 +318,8 @@ public class DriveDroid extends Activity {
 		super.onResume();
 		if (D)
 			Log.e(TAG, "+ ON RESUME +");
-
-		// Performing this check in onResume() covers the case in which BT was
-		// not enabled during onStart(), so we were paused to enable it...
-		// onResume() will be called when ACTION_REQUEST_ENABLE activity
-		// returns.
 		if (mChatService != null) {
-			// Only if the state is STATE_NONE, do we know that we haven't
-			// started already
 			if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
-				// Start the Bluetooth chat services
 				mChatService.start();
 			}
 		}
@@ -332,31 +327,8 @@ public class DriveDroid extends Activity {
 
 	private void setupChat() {
 		Log.d(TAG, "setupChat()");
-
-		// Initialize the array adapter for the conversation thread
-		// mConversationArrayAdapter = new ArrayAdapter<String>(this,
-		// R.layout.message);
-		// mConversationView = (ListView) findViewById(R.id.in);
-		// mConversationView.setAdapter(mConversationArrayAdapter);
-
-		// Initialize the compose field with a listener for the return key
-		// mOutEditText = (EditText) findViewById(R.id.edit_text_out);
 		mOutEditText.setOnEditorActionListener(mWriteListener);
-
-		// Initialize the send button with a listener that for click events
-		// mSendButton = (Button) findViewById(R.id.button_send);
-		// mSendButton.setOnClickListener(new OnClickListener() {
-		// public void onClick(View v) {
-		// // Send a message using content of the edit text widget
-		// TextView view = (TextView) findViewById(R.id.edit_text_out);
-		// String message = view.getText().toString();
-		// sendMessage(message);
-		// }
-		// });
-		// Initialize the BluetoothChatService to perform bluetooth connections
 		mChatService = new BluetoothChatService(this, mHandler);
-
-		// Initialize the buffer for outgoing messages
 		mOutStringBuffer = new StringBuffer("");
 	}
 
@@ -379,7 +351,6 @@ public class DriveDroid extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		// Stop the Bluetooth chat services
 		if (mChatService != null)
 			mChatService.stop();
 		if (D)
@@ -398,15 +369,9 @@ public class DriveDroid extends Activity {
 		}
 	}
 
-	/**
-	 * Sends a message.
-	 * 
-	 * @param message
-	 *            A string of text to send.
-	 */
+	// Invia messaggi
 	protected void sendMessage(String message) {
-		Log.d("ENTRATO", "Messaggio: " + message);
-		// Check that we're actually connected before trying anything
+		Log.d("ENTRATO", "Messaggio: " + message); // CONTROLLO
 		if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
 			/*
 			 * Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
@@ -415,49 +380,50 @@ public class DriveDroid extends Activity {
 			return;
 		}
 
-		// Check that there's actually something to send
+		// E' disponibile qualcosa da inviare?
 		if (message.length() > 0) {
-			// Get the message bytes and tell the BluetoothChatService to write
+			// Prendi i bytes del messaggio e comunica al BluetoothChatService
+			// di scrivere
 			byte[] send = message.getBytes();
 			mChatService.write(send);
 
-			// Reset out string buffer to zero and clear the edit text field
+			// Reset del buffer e pulizia della casella di testo
 			mOutStringBuffer.setLength(0);
 			mOutEditText.setText(mOutStringBuffer);
 		}
 	}
 
-	// The action listener for the EditText widget, to listen for the return key
+	// Listener per l'azione di invio nell'EditText
 	private TextView.OnEditorActionListener mWriteListener = new TextView.OnEditorActionListener() {
 		public boolean onEditorAction(TextView view, int actionId,
 				KeyEvent event) {
-			// If the action is a key-up event on the return key, send the
-			// message
+			// Invia se sul button c'e' l'azione ACTION_UP
 			if (actionId == EditorInfo.IME_NULL
 					&& event.getAction() == KeyEvent.ACTION_UP) {
 				String message = view.getText().toString();
 				sendMessage(message);
 			}
-			if (D)
+			if (D) {
 				Log.i(TAG, "END onEditorAction");
-			return true;
+			}
+			return false;
 		}
 	};
 
-	// The Handler that gets information back from the BluetoothChatService
+	// Handler che prende le informazione dal BluetoothChatService
 	public final Handler mHandler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case MESSAGE_STATE_CHANGE:
+			case MESSAGE_STATE_CHANGE: // Cambio lo stato della TextView nella
+										// Home
 				if (D)
 					Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
 				switch (msg.arg1) {
 				case BluetoothChatService.STATE_CONNECTED:
 					mTitle.setText(R.string.title_connected_to);
 					mTitle.append(mConnectedDeviceName);
-					// mConversationArrayAdapter.clear();
 					break;
 				case BluetoothChatService.STATE_CONNECTING:
 					mTitle.setText(R.string.title_connecting);
@@ -470,23 +436,17 @@ public class DriveDroid extends Activity {
 				break;
 			case MESSAGE_WRITE:
 				byte[] writeBuf = (byte[]) msg.obj;
-				// construct a string from the buffer
-				String writeMessage = new String(writeBuf);
-				// mConversationArrayAdapter.add("Me:  " + writeMessage);
+				// String writeMessage = new String(writeBuf);
 				break;
 			case MESSAGE_READ:
 				byte[] readBuf = (byte[]) msg.obj;
-				// construct a string from the valid bytes in the buffer
 				String readMessage = new String(readBuf, 0, msg.arg1);
-				// mConversationArrayAdapter.add(mConnectedDeviceName + ":  "
-				// + readMessage);
 				if (ldistance.isShown()) {
 					Log.d("ATTIVO", "" + readMessage);
 					distance.setDistance(readMessage);
 				}
 				break;
-			case MESSAGE_DEVICE_NAME:
-				// save the connected device's name
+			case MESSAGE_DEVICE_NAME: // Salva il nome del device collegato
 				mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
 				Toast.makeText(getApplicationContext(),
 						"Connected to " + mConnectedDeviceName,
@@ -615,48 +575,73 @@ public class DriveDroid extends Activity {
 	}
 
 	public void manageDirections(int lr, int bf) {
-		if (lr <= -4)
+		if (lr <= -4) {
 			sendMessage("SX4");
-		if (lr == -3)
-			sendMessage("SX3");
-		if (lr == -2)
-			sendMessage("SX2");
-		if (lr == -1)
-			sendMessage("SX1");
-		if (lr == 0)
-			sendMessage("SX0");
-		if (lr == +1)
-			sendMessage("DX1");
-		if (lr == +2)
-			sendMessage("DX2");
-		if (lr == +3)
-			sendMessage("DX3");
-		if (lr >= +4)
+		} else if (lr >= 4) {
 			sendMessage("DX4");
-		if (bf <= -4)
-			sendMessage("BW4");
-		if (bf == -3)
-			sendMessage("BW3");
-		if (bf == -2)
-			sendMessage("BW2");
-		if (bf == -1)
-			sendMessage("BW1");
-		if (bf == 0)
-			sendMessage("FW0");
-		if (bf == +1)
-			sendMessage("FW1");
-		if (bf == +2)
-			sendMessage("FW2");
-		if (bf == +3)
-			sendMessage("FW3");
-		if (bf >= +4)
-			sendMessage("FW4");
+		} else {
+			switch (lr) {
+			case -3:
+				sendMessage("SX3");
+				break;
+			case -2:
+				sendMessage("SX2");
+				break;
+			case -1:
+				sendMessage("SX1");
+				break;
+			case 0:
+				sendMessage("SX0");
+				break;
+			case 1:
+				sendMessage("DX1");
+				break;
+			case 2:
+				sendMessage("DX2");
+				break;
+			case 3:
+				sendMessage("DX3");
+				break;
+			default:
+				break;
+			}
+		}
 
+		if (bf <= -4) {
+			sendMessage("BW4");
+		} else if (bf >= 4) {
+			sendMessage("FW4");
+		} else {
+			switch (bf) {
+			case -3:
+				sendMessage("BW3");
+				break;
+			case -2:
+				sendMessage("BW2");
+				break;
+			case -1:
+				sendMessage("BW1");
+				break;
+			case 0:
+				sendMessage("FW0");
+				break;
+			case 1:
+				sendMessage("FW1");
+				break;
+			case 2:
+				sendMessage("FW2");
+				break;
+			case 3:
+				sendMessage("FW3");
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	public void speakButtonClicked(View v) {
 		startVoiceRecognitionActivity();
-
 	}
 
 	private void startVoiceRecognitionActivity() {
@@ -666,7 +651,6 @@ public class DriveDroid extends Activity {
 		intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
 				"Voice recognition Demo...");
 		startActivityForResult(intent, REQUEST_CODE);
-
 	}
 
 }
