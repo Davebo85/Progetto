@@ -231,7 +231,10 @@ public class DriveDroid extends Activity {
 					controllo(item, 0, -1);
 				} else if (item.equals("stop")) {
 					sendMessage("XX0");
-				}
+				} else
+					Toast.makeText(getApplicationContext(),
+							"Comando non valido, utilizzare il comando 'help'",
+							Toast.LENGTH_SHORT).show();
 				wordsList.setVisibility(FrameLayout.GONE);
 
 			}
