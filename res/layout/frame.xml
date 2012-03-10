@@ -39,27 +39,28 @@
                 android:text="MENU"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="30dp" />
-
+
             <Button
                 android:id="@+id/start"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="START" />
-
+
             <Button
                 android:id="@+id/scan"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="SCAN" />
-
+
             <Button
                 android:id="@+id/discoverable"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="DISCOVERABLE" />
+
         </LinearLayout>
 
         <LinearLayout
